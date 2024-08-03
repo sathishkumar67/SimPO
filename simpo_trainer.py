@@ -18,7 +18,7 @@ def prepare_dataset(dataset_name, tokenizer,split="train"):
 
     # tokenize the dataset
     df["input_ids"] = df["prompt"].apply(lambda x: tokenizer(x).input_ids)
-    df["target_ids"] = df["chosen"].apply(lambda x: tokenizer(x).input_ids)
+    df["chosen_ids"] = df["chosen"].apply(lambda x: tokenizer(x).input_ids)
     df["rejected_ids"] = df["rejected"].apply(lambda x: tokenizer(x).input_ids)
     # count the number of tokens in each sequence of input_ids
     df["input_ids_count"] = df["input_ids"].apply(lambda x: len(x))
