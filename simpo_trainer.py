@@ -49,7 +49,7 @@ class SimpoTrainer(L.LightningModule):
 
         # get log probabilities for chosen and rejected sequences
         chosen_ids_log_probs = F.log_softmax(chosen_ids_logits, dim=-1) # apply log(softmax(x))
-        rejected_ids_log_probs = F.log_softmax(rejected_ids_logits, dim=-1)
+        rejected_ids_log_probs = F.log_softmax(rejected_ids_logits, dim=-1) # apply log(softmax(x))
 
         # only get the log probabilities from input_ids_count
         chosen_ids_log_probs = chosen_ids_log_probs[:, :, input_ids_count-1:-1]
