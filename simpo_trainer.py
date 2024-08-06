@@ -73,12 +73,12 @@ class SimpoTrainer(L.LightningModule):
         optimizer.zero_grad()
         optimizer.train()
 
-        chosen_ids, rejected_ids = batch
-        _, seq_length = chosen_ids.shape
+        chosen_ids, chosen_attention_mask, rejected_ids, rejected_attention_mask = batch
+        
 
         # get logits for chosen and rejected sequences
-        chosen_ids_logits = self.model(chosen_ids)
-        rejected_ids_logits = self.model(rejected_ids)
+        chosen_ids_logits = self.model(chosen_ids, attention_mask=chosen_attention_mask)
+        rejected_ids_logits = self.model(rejected_ids, attention_mask=rejected_attention_mask)
 
         # get log probabilities for chosen and rejected sequences
         chosen_ids_log_probs = F.log_softmax(chosen_ids_logits, dim=-1)
@@ -89,8 +89,8 @@ class SimpoTrainer(L.LightningModule):
         sum_rejected_ids_log_probs = rejected_ids_log_probs.sum(dim=1)
 
         # multiply by beta and normalize by sequence length
-        chosen_reward = self.beta / seq_length * sum_chosen_ids_log_probs 
-        rejected_reward = self.beta / seq_length * sum_rejected_ids_log_probs 
+        chosen_reward = self.beta / config.seq_length * sum_chosen_ids_log_probs 
+        rejected_reward = self.beta / config.seq_length * sum_rejected_ids_log_probs 
         
         # calculate the loss
         loss = -torch.log(torch.sigmoid(chosen_reward - rejected_reward - self.gamma)).mean()
